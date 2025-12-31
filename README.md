@@ -83,7 +83,23 @@ The agent will automatically use OpenAI if available, otherwise fall back to Ope
 
 ## Usage
 
-Run the agent:
+### Option 1: Streamlit Web Interface (Recommended)
+
+Run the interactive web interface:
+```bash
+streamlit run app.py
+```
+
+This will open a browser window with a user-friendly chat interface where you can:
+- Ask math questions in a conversational way
+- See step-by-step solutions
+- Use example questions from the sidebar
+- Clear chat history
+- View all available math topics
+
+### Option 2: Command Line Interface
+
+Run the command-line version:
 ```bash
 python main.py
 ```
@@ -144,7 +160,8 @@ Type `quit` to exit the application.
 
 ```
 math-agent/
-├── main.py              # Main application file with agent and comprehensive math tools
+├── app.py               # Streamlit web interface (recommended)
+├── main.py              # Command-line interface with agent and comprehensive math tools
 ├── prompts/
 │   └── system_prompt.txt # System prompt for focused math assistance
 ├── pyproject.toml        # Project dependencies and configuration
@@ -155,6 +172,7 @@ math-agent/
 
 ## Technologies Used
 
+- [Streamlit](https://streamlit.io/) - Interactive web interface framework
 - [LangChain](https://python.langchain.com/) - Framework for building LLM applications
 - [LangGraph](https://langchain-ai.github.io/langgraph/) - Library for building stateful, multi-actor applications
 - [SymPy](https://www.sympy.org/) - Python library for symbolic mathematics

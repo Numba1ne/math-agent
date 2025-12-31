@@ -575,36 +575,9 @@ def ratio_simplify(a: float, b: float) -> str:
     return f"Ratio {a}:{b} simplified = {simplified_a}:{simplified_b}"
 
 
-def main():
-    # Try OpenAI API key first, fallback to OpenRouter
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
-    
-    if openai_api_key:
-        # Use direct OpenAI API
-        model = ChatOpenAI(
-            api_key=openai_api_key,
-            model="gpt-4o-mini",  # You can change to "gpt-4o" or "gpt-3.5-turbo"
-            temperature=0,
-        )
-        print("Using direct OpenAI API")
-    elif openrouter_api_key:
-        # Fallback to OpenRouter
-        model = ChatOpenAI(
-            api_key=openrouter_api_key,
-            base_url="https://openrouter.ai/api/v1",
-            model="openai/gpt-4o-mini",  # You can change to "openai/gpt-4" or "openai/gpt-3.5-turbo"
-            temperature=0,
-        )
-        print("Using OpenRouter API (fallback)")
-    else:
-        raise ValueError(
-            "Neither OPENAI_API_KEY nor OPENROUTER_API_KEY found. "
-            "Please add one of them to your .env file."
-        )
-
-    # Comprehensive math tools for secondary school
-    tools = [
+def get_all_tools():
+    """Get all math tools for the agent."""
+    return [
         # Basic arithmetic
         calculator, power, square_root,
         # Algebra
@@ -624,12 +597,52 @@ def main():
         # Percentages and ratios
         percentage, percentage_of, ratio_simplify,
     ]
+
+
+def initialize_agent():
+    """Initialize the math agent with all tools. Returns (agent_executor, system_message, api_status)."""
+    # Try OpenAI API key first, fallback to OpenRouter
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+    
+    if openai_api_key:
+        # Use direct OpenAI API
+        model = ChatOpenAI(
+            api_key=openai_api_key,
+            model="gpt-4o-mini",  # You can change to "gpt-4o" or "gpt-3.5-turbo"
+            temperature=0,
+        )
+        api_status = "Using direct OpenAI API"
+    elif openrouter_api_key:
+        # Fallback to OpenRouter
+        model = ChatOpenAI(
+            api_key=openrouter_api_key,
+            base_url="https://openrouter.ai/api/v1",
+            model="openai/gpt-4o-mini",  # You can change to "openai/gpt-4" or "openai/gpt-3.5-turbo"
+            temperature=0,
+        )
+        api_status = "Using OpenRouter API (fallback)"
+    else:
+        raise ValueError(
+            "Neither OPENAI_API_KEY nor OPENROUTER_API_KEY found. "
+            "Please add one of them to your .env file."
+        )
+
+    # Comprehensive math tools for secondary school
+    tools = get_all_tools()
     
     agent_executor = create_react_agent(model, tools)
     
     # Load system prompt once at startup
     system_prompt = load_system_prompt()
     system_message = SystemMessage(content=system_prompt)
+    
+    return agent_executor, system_message, api_status
+
+
+def main():
+    agent_executor, system_message, api_status = initialize_agent()
+    print(api_status)
 
     print("Welcome! I'm your comprehensive Math AI assistant for secondary school exam preparation.")
     print("I can help you with:")
